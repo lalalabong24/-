@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>이직비서 — 대충 살아도, 이직은 챙겨드릴게요</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🙋</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.11.0/mammoth.browser.min.js"></script>
+<style>
+  :root{
+    --bg:#15242B;
+    --bg-soft:#1C2F37;
+    --bg-softer:#24404B;
+    --cream:#F6F1E4;
+    --cream-dim:#B9C2BE;
+    --lamp:#F4B942;
+    --lamp-soft:#FFDE9E;
+    --coral:#FF6B5B;
+    --mint:#8FD9C4;
+    --ink:#19262B;
+    --radius:20px;
+    --serif:'Gowun Batang', serif;
+    --sans:'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--cream);
+    font-family:var(--sans);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  img,svg{display:block;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  .wrap-narrow{max-width:680px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(21,36,43,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(246,241,228,0.08);
+  }
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    max-width:1080px;margin:0 auto;padding:16px 24px;
+  }
+  .logo{
+    font-weight:800;font-size:18px;letter-spacing:-0.02em;
+    display:flex;align-items:center;gap:8px;
+  }
+  .logo span{font-size:20px;}
+  .nav-cta{
+    background:var(--lamp);color:var(--ink);
+    padding:9px 18px;border-radius:999px;
+    font-weight:700;font-size:14px;
+    text-decoration:none;
+    transition:transform .15s ease;
+  }
+  .nav-cta:hover{transform:translateY(-1px);}
+
+  /* ---------- Hero / Chat thread ---------- */
+  .hero{padding:56px 0 30px;}
+  .hero-eyebrow{
+    text-align:center;color:var(--cream-dim);
+    font-size:13px;letter-spacing:0.14em;text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  .chat-card{
+    background:var(--bg-soft);
+    border:1px solid rgba(246,241,228,0.07);
+    border-radius:28px;
+    padding:36px 18px 28px;
+    max-width:640px;margin:0 auto;
+    box-shadow:0 30px 60px -30px rgba(0,0,0,0.6);
+  }
+  .chat-thread{display:flex;flex-direction:column;gap:10px;padding:0 8px;}
+
+  .bubble{
+    max-width:80%;
+    padding:13px 18px;
+    border-radius:20px;
+    font-size:16px;
+    line-height:1.5;
+  }
+  .row{display:flex;}
+  .row.right{justify-content:flex-end;}
+  .row.left{justify-content:flex-start;align-items:flex-end;gap:8px;}
+
+  .bubble.mine{
+    background:var(--lamp);color:var(--ink);
+    border-radius:20px 20px 4px 20px;
+    font-weight:600;
+  }
+  .bubble.mine.sticker{
+    background:rgba(244,185,66,0.35);
+    color:var(--lamp-soft);
+    font-weight:500;font-size:14px;
+    padding:8px 16px;
+  }
+  .bubble.mine.serif{
+    background:transparent;
+    border:1px solid rgba(246,241,228,0.25);
+    color:var(--cream);
+    font-family:var(--serif);
+    font-size:21px;
+    border-radius:20px 20px 4px 20px;
+  }
+  .bubble.bot{
+    background:var(--cream);color:var(--ink);
+    border-radius:20px 20px 20px 4px;
+    font-weight:600;
+  }
+  .avatar{
+    width:30px;height:30px;border-radius:50%;
+    background:var(--mint);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;flex-shrink:0;
+  }
+  .divider{
+    display:flex;align-items:center;gap:12px;
+    color:var(--cream-dim);font-size:13px;letter-spacing:0.08em;
+    margin:22px 8px;
+  }
+  .divider::before,.divider::after{
+    content:"";flex:1;height:1px;background:rgba(246,241,228,0.15);
+  }
+  .typing-dots{display:inline-flex;gap:4px;align-items:center;}
+  .typing-dots span{
+    width:6px;height:6px;border-radius:50%;background:var(--ink);opacity:.4;
+    animation:blink 1.3s infinite;
+  }
+  .typing-dots span:nth-child(2){animation-delay:.2s;}
+  .typing-dots span:nth-child(3){animation-delay:.4s;}
+  @keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+  .reveal{opacity:1;transform:none;}
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{opacity:0;transform:translateY(10px);animation:fadeUp .55s ease forwards;}
+  }
+  @keyframes fadeUp{to{opacity:1;transform:none;}}
+
+  .hero-cta{
+    text-align:center;margin-top:30px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  }
+  .btn-primary{
+    background:var(--coral);color:#fff;
+    padding:15px 30px;border-radius:999px;
+    font-weight:800;font-size:16px;
+    border:none;cursor:pointer;text-decoration:none;
+    display:inline-block;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 12px 24px -10px rgba(255,107,91,0.5);
+  }
+  .btn-primary:hover{transform:translateY(-2px);}
+  .link-quiet{
+    color:var(--cream-dim);font-size:13px;text-decoration:underline;
+    cursor:pointer;background:none;border:none;font-family:var(--sans);
+  }
+
+  /* ---------- Section generic ---------- */
+  section{padding:80px 0;}
+  .section-head{text-align:center;max-width:560px;margin:0 auto 44px;}
+  .eyebrow{
+    color:var(--mint);font-size:13px;font-weight:700;
+    letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;
+  }
+  .section-title{
+    font-size:30px;font-weight:800;letter-spacing:-0.01em;margin:0 0 10px;
+  }
+  .section-sub{color:var(--cream-dim);font-size:16px;margin:0;}
+
+  /* ---------- Benefits ---------- */
+  .benefits-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
+  }
+  .benefit-card{
+    background:var(--bg-soft);
+    border:1px solid rgba(246,241,228,0.07);
+    border-radius:var(--radius);
+    padding:28px 24px;
+  }
+  .benefit-num{
+    font-family:var(--serif);color:var(--lamp);font-size:15px;margin-bottom:14px;
+  }
+  .benefit-card h3{font-size:19px;margin:0 0 10px;}
+  .benefit-card p{color:var(--cream-dim);font-size:15px;margin:0;}
+
+  /* ---------- Demo ---------- */
+  .demo-card{
+    background:var(--bg-soft);
+    border:1px solid rgba(246,241,228,0.07);
+    border-radius:28px;padding:32px;
+  }
+  .demo-label{font-weight:700;font-size:14px;color:var(--cream-dim);margin-bottom:10px;}
+  textarea{
+    width:100%;min-height:140px;
+    background:var(--bg);
+    border:1px solid rgba(246,241,228,0.15);
+    border-radius:16px;
+    color:var(--cream);
+    padding:16px;font-size:15px;font-family:var(--sans);
+    resize:vertical;
+  }
+  textarea:focus{outline:2px solid var(--mint);outline-offset:2px;}
+  textarea::placeholder{color:rgba(246,241,228,0.35);}
+  .demo-actions{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:14px;flex-wrap:wrap;gap:10px;
+  }
+  .demo-hint{font-size:13px;color:var(--cream-dim);}
+  #analyzeBtn{
+    background:var(--lamp);color:var(--ink);font-weight:800;
+    border:none;border-radius:999px;padding:13px 24px;font-size:15px;
+    cursor:pointer;font-family:var(--sans);
+    transition:transform .15s ease;
+  }
+  #analyzeBtn:hover{transform:translateY(-1px);}
+  #analyzeBtn:disabled{opacity:.6;cursor:not-allowed;}
+
+  #demoResult{margin-top:24px;}
+  .demo-engine-note{
+    font-size:12.5px;color:var(--cream-dim);margin:-4px 0 14px;
+  }
+  .dropzone{
+    border:2px dashed rgba(246,241,228,0.18);
+    border-radius:18px;
+    padding:16px;
+    transition:border-color .15s ease, background-color .15s ease;
+  }
+  .dropzone.dragover{
+    border-color:var(--mint);
+    background:rgba(143,217,196,0.08);
+  }
+  .dropzone textarea{
+    border:none;background:var(--bg);margin-top:10px;
+  }
+  .dropzone textarea:focus{outline:2px solid var(--mint);outline-offset:2px;}
+  .upload-row{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;
+  }
+  .upload-btn{
+    background:var(--bg);
+    border:1px dashed rgba(246,241,228,0.3);
+    color:var(--cream);
+    padding:9px 16px;border-radius:999px;
+    font-size:14px;font-weight:700;cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .upload-btn:hover{border-color:var(--mint);}
+  .upload-hint{font-size:12.5px;color:var(--cream-dim);}
+  .file-status{font-size:12.5px;color:var(--mint);font-weight:600;}
+  .result-filter-row{
+    display:flex;gap:10px;flex-wrap:wrap;margin:4px 0 18px;
+    padding:14px;background:rgba(25,38,43,0.05);border-radius:14px;
+  }
+  .result-filter-field{
+    flex:1;min-width:130px;display:flex;flex-direction:column;gap:4px;
+  }
+  .result-filter-field label{
+    font-size:11.5px;font-weight:800;color:#3c5048;
+  }
+  .result-filter-field select{
+    background:#fff;border:1px solid rgba(25,38,43,0.15);
+    color:var(--ink);border-radius:8px;padding:7px 8px;font-size:13px;
+    font-family:var(--sans);
+  }
+  .result-bubble{
+    background:var(--cream);color:var(--ink);
+    border-radius:20px 20px 20px 4px;
+    padding:22px 22px;max-width:100%;
+  }
+  .result-comment{font-size:15px;margin:0 0 16px;font-weight:600;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;}
+  .chip{
+    background:rgba(25,38,43,0.08);
+    border:1px solid rgba(25,38,43,0.15);
+    padding:6px 14px;border-radius:999px;font-size:13px;font-weight:700;
+  }
+  .result-section-label{
+    font-size:13px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;
+    color:#3c5048;margin:18px 0 10px;
+  }
+  .keyword-row{
+    background:rgba(25,38,43,0.05);
+    border-radius:14px;padding:12px 14px;margin-bottom:10px;
+  }
+  .keyword-row-top{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;
+    font-weight:800;font-size:14px;
+  }
+  .platform-links{display:flex;gap:8px;flex-wrap:wrap;}
+  .platform-links a{
+    font-size:12.5px;font-weight:700;
+    padding:7px 12px;border-radius:999px;
+    text-decoration:none;
+    background:var(--ink);color:var(--cream);
+    transition:opacity .15s ease;
+  }
+  .platform-links a:hover{opacity:.8;}
+  .demo-disclaimer{
+    font-size:12.5px;color:#5b6b66;margin-top:14px;line-height:1.5;
+  }
+  .demo-error{color:var(--coral);font-weight:700;font-size:15px;}
+  .tab-row{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 14px;}
+  .tab-btn{
+    background:#fff;border:1px solid rgba(25,38,43,0.15);color:#3c5048;
+    padding:8px 14px;border-radius:999px;font-size:13px;font-weight:700;
+    cursor:pointer;font-family:var(--sans);transition:background-color .15s ease,color .15s ease;
+  }
+  .tab-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .industry-group{margin-bottom:18px;}
+  .industry-group-header{
+    font-size:14.5px;font-weight:800;color:var(--ink);margin-bottom:6px;
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  }
+  .industry-group-count{font-size:12px;color:#5b6b66;font-weight:600;}
+  .signal-tags{font-size:12.5px;color:#5b6b66;margin:-2px 0 10px;}
+  .surprising-card{
+    background:rgba(244,185,66,0.14);
+    border:1px solid rgba(244,185,66,0.4);
+    border-radius:14px;padding:14px;margin-bottom:12px;
+  }
+  .surprising-note{font-size:13px;color:#5b4a1a;margin:6px 0 12px;line-height:1.5;}
+  .real-jobs{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+  .real-job-card{
+    display:flex;flex-direction:column;gap:2px;
+    background:#fff;border:1px solid rgba(25,38,43,0.12);border-radius:12px;
+    padding:10px 14px;text-decoration:none;color:var(--ink);
+    transition:border-color .15s ease;
+  }
+  .real-job-card:hover{border-color:var(--mint);}
+  .real-job-company{font-size:12.5px;font-weight:700;color:#3c5048;}
+  .real-job-title{font-size:14px;font-weight:700;}
+  .real-job-meta{font-size:12px;color:#5b6b66;}
+  .more-search-link{margin-top:6px;}
+  .more-search-link a{font-size:12.5px;font-weight:700;color:#3c5048;text-decoration:underline;}
+
+  /* ---------- How it works ---------- */
+  .how-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:18px;
+  }
+  .how-card{
+    background:var(--bg-soft);border:1px solid rgba(246,241,228,0.07);
+    border-radius:var(--radius);padding:24px 20px;
+  }
+  .how-step{
+    font-family:var(--serif);font-size:14px;color:var(--mint);margin-bottom:14px;
+  }
+  .how-card h4{font-size:16px;margin:0 0 8px;}
+  .how-card p{font-size:14px;color:var(--cream-dim);margin:0;}
+
+  /* ---------- Final CTA ---------- */
+  .final-cta{
+    text-align:center;
+    background:var(--bg-soft);
+    border:1px solid rgba(246,241,228,0.07);
+    border-radius:32px;padding:60px 30px;
+    max-width:780px;margin:0 auto;
+  }
+  .final-cta h2{
+    font-family:var(--serif);font-size:32px;font-weight:700;margin:0 0 14px;
+  }
+  .final-cta p{color:var(--cream-dim);margin:0 0 26px;font-size:16px;}
+
+  footer{
+    border-top:1px solid rgba(246,241,228,0.08);
+    padding:28px 0;text-align:center;
+    color:var(--cream-dim);font-size:13px;
+  }
+
+  @media (max-width:860px){
+    .benefits-grid{grid-template-columns:1fr;}
+    .how-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:560px){
+    .how-grid{grid-template-columns:1fr;}
+    .section-title{font-size:25px;}
+    .final-cta h2{font-size:26px;}
+    .bubble{font-size:15px;}
+    .bubble.mine.serif{font-size:18px;}
+    .demo-card{padding:22px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo"><span>🙋</span>이직비서</div>
+    <a class="nav-cta" href="#demo">대충 체험해보기</a>
+  </div>
+</header>
+
+<!-- ===================== HERO : CHAT THREAD ===================== -->
+<section class="hero">
+  <div class="hero-eyebrow">이직비서와의 대화</div>
+  <div class="chat-card">
+    <div class="chat-thread">
+
+      <div class="row right reveal" style="animation-delay:.05s">
+        <div class="bubble mine">아무 일도 하지 않으면, 아무 일도 일어나지 않아요.</div>
+      </div>
+      <div class="row right reveal" style="animation-delay:.5s">
+        <div class="bubble mine">그치만 퇴근하면… 진짜 아무것도 하고 싶지 않다고요 🫠</div>
+      </div>
+      <div class="row right reveal" style="animation-delay:1s">
+        <div class="bubble mine sticker">대충 살자,,~ 🙃</div>
+      </div>
+      <div class="row right reveal" style="animation-delay:1.4s">
+        <div class="bubble mine">근데 가끔 열정이 폭발하는 날도 있단 말이죠</div>
+      </div>
+      <div class="row right reveal" style="animation-delay:1.8s">
+        <div class="bubble mine">커리어 정리해보려고 하면… 손에 안 잡혀요. 피곤해.</div>
+      </div>
+      <div class="row right reveal" style="animation-delay:2.2s">
+        <div class="bubble mine">어… 그 경험이 뭐였더라. 회사 가서 자료 찾아봐야 하나 😵‍💫</div>
+      </div>
+      <div class="row right reveal" style="animation-delay:2.6s">
+        <div class="bubble mine">어, 지원 시기 벌써 끝났네 😱</div>
+      </div>
+      <div class="row right reveal" style="animation-delay:3s">
+        <div class="bubble mine serif">매일… 후회로 가득한 삶.</div>
+      </div>
+
+      <div class="divider reveal" style="animation-delay:3.4s">더는 그러지 마세요</div>
+
+      <div class="row left reveal" style="animation-delay:3.7s">
+        <div class="avatar">🙋</div>
+        <div class="bubble bot">
+          <span class="typing-dots"><span></span><span></span><span></span></span>
+        </div>
+      </div>
+      <div class="row left reveal" style="animation-delay:4.6s">
+        <div class="avatar">🙋</div>
+        <div class="bubble bot">이직 지원, 관리해주는 비서가 있었으면 좋겠다 — 그 마음 다 알아요.</div>
+      </div>
+      <div class="row left reveal" style="animation-delay:5.1s">
+        <div class="avatar">🙋</div>
+        <div class="bubble bot">저를 부르셨나요? 👋</div>
+      </div>
+      <div class="row left reveal" style="animation-delay:5.6s">
+        <div class="avatar">🙋</div>
+        <div class="bubble bot"><strong>이직비서</strong>, 여기 있습니다.</div>
+      </div>
+
+    </div>
+
+    <div class="hero-cta reveal" style="animation-delay:6s">
+      <a class="btn-primary" href="#demo">대충이라도 한번 보여줘요 →</a>
+      <button class="link-quiet" onclick="document.getElementById('how').scrollIntoView()">어떻게 되는 건데요?</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BENEFITS ===================== -->
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Why</div>
+      <h2 class="section-title">뭐가 다른데요?</h2>
+      <p class="section-sub">이직 준비, 다 비슷한 거 아니냐고요? 셋만 봐주세요.</p>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-num">One</div>
+        <h3>산업 가리지 않고</h3>
+        <p>한 번 정리해둔 커리어로 IT, 금융, 제조, 외국계까지 — 업종 안 가리고 다 지원할 수 있어요.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-num">Two</div>
+        <h3>나도 몰랐던 내 강점</h3>
+        <p>나는 별거 아니라고 생각했던 경험, 회사는 의외로 좋아해요. AI가 먼저 찾아서 알려드려요.</p>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-num">Three</div>
+        <h3>귀찮음 담당, 저요</h3>
+        <p>이직은 하고 싶은데 다 귀찮은 사람들 위한 서비스예요. 입력은 5분, 나머지는 비서가 할게요.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== DEMO ===================== -->
+<section id="demo">
+  <div class="wrap-narrow">
+    <div class="section-head">
+      <div class="eyebrow">진짜로 되나?</div>
+      <h2 class="section-title">한번 보여드릴게요</h2>
+      <p class="section-sub">경력기술서를 통째로 붙여넣어도 되고, "저 이런 일 했어요" 수준으로 대충 적어도 돼요.</p>
+    </div>
+
+    <div class="demo-card">
+      <div class="demo-label">내 경력, 대충 적어보기</div>
+      <p class="demo-engine-note">* 이 데모는 키워드 매칭 방식으로 동작해요. (네트워크 연결 없이도 항상 작동해요)</p>
+
+      <div class="dropzone" id="dropzone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+        <div class="upload-row">
+          <label class="upload-btn" for="careerFile">📎 파일로 올리기</label>
+          <input type="file" id="careerFile" accept=".pdf,.docx,.txt,.md" onchange="handleFileInputChange(event)" hidden>
+          <span class="upload-hint">또는 여기로 파일을 끌어다 놓으세요 · .pdf · .docx · .txt</span>
+        </div>
+        <span id="fileStatus" class="file-status"></span>
+
+        <textarea id="careerInput" placeholder="예: 3년차 백엔드 개발자. 스타트업에서 Node.js, AWS로 결제 시스템 운영. 트래픽 2배 증가 대응 경험 있음. 신규 결제 모듈 설계해서 장애율 줄임."></textarea>
+      </div>
+
+      <div class="demo-actions">
+        <span class="demo-hint">맞춤법, 줄글, 키워드 나열 다 괜찮아요.</span>
+        <button id="analyzeBtn" onclick="analyzeCareer()">내 강점 분석하기</button>
+      </div>
+
+      <div id="demoResult"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW IT WORKS ===================== -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">How it works</div>
+      <h2 class="section-title">어떻게 동작하는 거예요?</h2>
+      <p class="section-sub">복잡한 거 없어요. 딱 4단계예요.</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-step">Step 01</div>
+        <h4>커리어 대충 던지기</h4>
+        <p>경력기술서, 이력서, 그냥 적은 경험 설명, 뭐든 좋아요.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step">Step 02</div>
+        <h4>AI가 강점·키워드 추출</h4>
+        <p>회사가 좋아할 만한 표현으로, 내 강점과 검색 키워드를 뽑아내요.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step">Step 03</div>
+        <h4>여러 사이트 공고 매칭</h4>
+        <p>링크드인·잡코리아·사람인·피플앤잡 — 키워드에 맞는 검색 결과로 바로 연결해드려요.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-step">Step 04</div>
+        <h4>클릭, 지원</h4>
+        <p>마음에 드는 공고를 발견하면, 그 사이트에서 바로 지원하면 끝.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FINAL CTA ===================== -->
+<section>
+  <div class="wrap">
+    <div class="final-cta">
+      <h2>저를 부르셨잖아요.</h2>
+      <p>회원가입 필요 없어요. 그냥 위에 한번 붙여넣어 보세요.</p>
+      <a class="btn-primary" href="#demo">지금 체험해보기 →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © 2026 이직비서 · 이건 데모 페이지예요. 입력하신 내용은 분석 후 별도로 저장되지 않아요.
+</footer>
+
+<script>
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
+}
+
+let lastMatches = [];
+let currentTab = 'industry';
+
+/* ---------- 강점 시그널 → 산업×직무 확장 매핑 ---------- */
+const SIGNALS = [
+  { id:'quality', label:'프로세스/품질 개선 경험', triggers:['개선','수율','절감','최적화','품질관리','불량','품질 보증'],
+    expansions:[
+      { industry:'반도체/전자', role:'공정기술 엔지니어' },
+      { industry:'자동차/부품', role:'생산기술 엔지니어' },
+      { industry:'2차전지/소재', role:'품질관리(QA) 엔지니어' },
+      { industry:'제약/바이오', role:'QA 스페셜리스트', surprising:true, note:'정밀한 공정·품질 기준 관리 경험은 의약품 품질관리(QA)에서도 핵심 역량으로 통해요.' },
+      { industry:'경영컨설팅', role:'Operations Consultant', surprising:true, note:'현장에서 비효율을 찾아 개선한 경험은, 컨설팅펌의 운영 효율화 프로젝트에 그대로 쓰여요.' }
+    ]},
+  { id:'newSystem', label:'신규 시스템·설비 도입 경험', triggers:['신규','도입','구축','승인','셋업'],
+    expansions:[
+      { industry:'제조/생산', role:'생산기술 엔지니어' },
+      { industry:'스마트팩토리/자동화', role:'자동화 솔루션 엔지니어' },
+      { industry:'IT/SaaS', role:'프로덕트 오퍼레이션 매니저', surprising:true, note:'새 시스템을 들여와 안정화시킨 경험은, IT 서비스의 신규 기능 온보딩 운영 업무와 본질이 같아요.' },
+      { industry:'금융/핀테크', role:'시스템 도입 PM', surprising:true, note:'복잡한 도입 프로세스를 승인까지 끌고 간 경험은, 금융권 시스템 구축 PM 자리에서 높게 평가돼요.' }
+    ]},
+  { id:'dataTransition', label:'데이터·시스템 전환 경험', triggers:['데이터','전산화','mes','scada','시스템 연동','디지털 전환'],
+    expansions:[
+      { industry:'제조', role:'스마트팩토리 데이터 엔지니어' },
+      { industry:'IT/데이터', role:'데이터 분석가' },
+      { industry:'물류/SCM', role:'SCM 데이터 담당자', surprising:true, note:'현장 데이터를 시스템으로 옮긴 경험은, 물류센터의 데이터 기반 운영관리 직무에서 그대로 쓰여요.' },
+      { industry:'리테일/이커머스', role:'데이터 기반 운영 담당', surprising:true, note:'수기 업무를 데이터화한 경험은, 이커머스 운영 효율화 직무가 가장 원하는 역량이에요.' }
+    ]},
+  { id:'collab', label:'타부서 협업 및 조율 경험', triggers:['협업','타부서','커뮤니케이션','조율','원단위'],
+    expansions:[
+      { industry:'제조', role:'생산관리 담당자' },
+      { industry:'IT서비스', role:'프로덕트 매니저(PM)' },
+      { industry:'경영컨설팅', role:'프로젝트 매니저(PM)', surprising:true, note:'여러 부서 사이 일정과 이해관계를 조율한 경험은, 컨설팅 프로젝트 매니징과 같은 근육을 써요.' },
+      { industry:'스타트업 전반', role:'Operations Manager', surprising:true, note:'부서 간 조율 경험은 작은 조직에서 "오퍼레이션 전체"를 보는 역할로 확장돼요.' }
+    ]},
+  { id:'sales', label:'영업/매출 성과 경험', triggers:['영업','매출','거래처','세일즈','신규 고객'],
+    expansions:[
+      { industry:'B2B 솔루션', role:'영업 담당자' },
+      { industry:'리테일', role:'영업기획 담당자' },
+      { industry:'외국계 기업', role:'Account Manager', surprising:true, note:'거래처를 직접 관리하고 매출을 책임진 경험은, 외국계의 Account Manager 직무와 1:1로 맞닿아요.' },
+      { industry:'금융/보험', role:'영업관리직', surprising:true, note:'신규 고객 발굴 경험은 금융권 영업관리직에서도 핵심 평가 항목이에요.' }
+    ]},
+  { id:'marketing', label:'마케팅/콘텐츠 기획 경험', triggers:['마케팅','캠페인','브랜드','콘텐츠','sns'],
+    expansions:[
+      { industry:'이커머스', role:'퍼포먼스 마케터' },
+      { industry:'뷰티/F&B', role:'브랜드 마케터' },
+      { industry:'IT/플랫폼', role:'그로스 마케터', surprising:true, note:'캠페인을 기획하고 성과를 측정한 경험은, IT 플랫폼의 그로스 마케팅 직무가 그대로 원하는 역량이에요.' },
+      { industry:'엔터/미디어', role:'콘텐츠 마케터' }
+    ]},
+  { id:'strategy', label:'기획/전략 수립 경험', triggers:['기획','전략','사업계획','신사업'],
+    expansions:[
+      { industry:'대기업', role:'경영기획 담당자' },
+      { industry:'스타트업', role:'사업기획 PM' },
+      { industry:'경영컨설팅', role:'전략 컨설턴트', surprising:true, note:'사업 방향을 분석하고 계획을 세운 경험은, 컨설팅펌의 전략 분석 업무와 같은 사고 과정을 거쳐요.' },
+      { industry:'VC/투자', role:'투자심사 어시스턴트', surprising:true, note:'신사업을 검토했던 경험은, 투자사가 스타트업을 평가하는 시각과 닮아있어요.' }
+    ]},
+  { id:'hr', label:'인사/조직 운영 경험', triggers:['인사','채용 담당','노무','조직문화'],
+    expansions:[
+      { industry:'대기업/제조', role:'인사담당자' },
+      { industry:'스타트업', role:'HRBP' },
+      { industry:'헤드헌팅', role:'리크루터', surprising:true, note:'채용을 직접 운영해본 경험은, 헤드헌팅사의 후보자 매칭 업무로 바로 이어져요.' },
+      { industry:'경영컨설팅', role:'HR 컨설턴트' }
+    ]},
+  { id:'finance', label:'재무/회계 관리 경험', triggers:['재무','회계','결산','예산','감사'],
+    expansions:[
+      { industry:'제조/대기업', role:'재무팀 담당자' },
+      { industry:'스타트업', role:'재무/어드민 매니저' },
+      { industry:'회계법인', role:'주니어 회계사' },
+      { industry:'VC/투자', role:'포트폴리오 재무 담당', surprising:true, note:'결산·예산 관리 경험은 투자사가 포트폴리오사를 재무적으로 관리하는 업무와 잘 맞아요.' }
+    ]},
+  { id:'dev', label:'개발/엔지니어링 역량', triggers:['개발','node.js','react','spring','python','java','백엔드','프론트엔드'],
+    expansions:[
+      { industry:'IT/플랫폼', role:'백엔드 개발자' },
+      { industry:'핀테크', role:'결제 시스템 개발자' },
+      { industry:'게임', role:'서버 개발자', surprising:true, note:'안정적인 서버 운영 경험은, 트래픽이 몰리는 게임 서버 개발에서 특히 중요하게 평가돼요.' },
+      { industry:'제조 IT', role:'사내 시스템 개발자' }
+    ]},
+  { id:'cs', label:'고객 대응/CS 경험', triggers:['고객 응대','클레임','고객 만족','대응'],
+    expansions:[
+      { industry:'이커머스', role:'CS 매니저' },
+      { industry:'B2B 솔루션', role:'고객성공(CS) 매니저' },
+      { industry:'외국계', role:'Client Success Manager', surprising:true, note:'클레임을 풀어낸 경험은, 외국계 Client Success 직무가 요구하는 문제해결력과 같아요.' }
+    ]},
+  { id:'global', label:'해외/외국어 업무 경험', triggers:['영문','해외','수출','외국계','글로벌'],
+    expansions:[
+      { industry:'외국계 기업', role:'해외영업 담당자' },
+      { industry:'무역/수출', role:'수출 관리 담당자' },
+      { industry:'다국적 제조', role:'글로벌 SCM 담당자', surprising:true, note:'해외 고객·거래처와 직접 소통한 경험은, 다국적 제조사의 글로벌 SCM 직무에서 바로 쓰여요.' }
+    ]},
+  { id:'pm', label:'프로젝트 관리(PM) 경험', triggers:['프로젝트 관리','일정 관리','프로젝트 총괄'],
+    expansions:[
+      { industry:'IT/플랫폼', role:'프로덕트 매니저(PM)' },
+      { industry:'건설/엔지니어링', role:'PM/PMO 담당자' },
+      { industry:'광고/에이전시', role:'AE(어카운트 매니저)', surprising:true, note:'여러 일정을 동시에 굴린 경험은, 광고 에이전시 AE 업무와 일하는 리듬이 비슷해요.' }
+    ]},
+  { id:'docManage', label:'표준문서/품질문서 관리 경험', triggers:['표준문서','문서 관리','조건 최적화','규정 관리'],
+    expansions:[
+      { industry:'제조', role:'품질문서 담당자' },
+      { industry:'인증/심사', role:'ISO 인증 담당자', surprising:true, note:'표준 문서를 다뤄본 경험은, 인증기관의 심사 보조 업무에 그대로 활용돼요.' },
+      { industry:'법무/컴플라이언스', role:'컴플라이언스 담당자', surprising:true, note:'규정을 꼼꼼히 관리한 경험은, 컴플라이언스 직무가 정확히 원하는 역량이에요.' }
+    ]},
+  { id:'design', label:'디자인/프로덕트 기획 경험', triggers:['ux','ui 디자인','figma','프로덕트 디자인'],
+    expansions:[
+      { industry:'IT/플랫폼', role:'UX/UI 디자이너' },
+      { industry:'이커머스', role:'프로덕트 디자이너' },
+      { industry:'금융/핀테크', role:'서비스 디자이너', surprising:true, note:'사용자 흐름을 고민한 경험은, 금융 앱의 복잡한 플로우를 쉽게 만드는 서비스 디자인에 잘 맞아요.' }
+    ]}
+];
+
+const DEFAULT_SIGNAL = { id:'default', label:'성실한 실무 경험',
+  expansions:[ { industry:'다양한 산업', role:'직무 전문가' } ] };
+
+const COMMENTS = [
+  '오, 생각보다 강점이 또렷하게 보이는데요? 😎',
+  '이 정도면 여러 곳에 충분히 던져볼 만해요 🙌',
+  '의외로 이런 경험을 찾는 회사 많아요!',
+  '대충 적으셨다더니, 내용은 알차네요 👀'
+];
+
+function deriveMatches(text){
+  const lower = text.toLowerCase();
+  const matchedSignals = SIGNALS.filter(function(s){
+    return s.triggers.some(function(t){ return lower.indexOf(t.toLowerCase()) !== -1; });
+  });
+  const effectiveSignals = matchedSignals.length ? matchedSignals : [DEFAULT_SIGNAL];
+
+  const matchMap = {};
+  effectiveSignals.forEach(function(sig){
+    sig.expansions.forEach(function(exp){
+      const key = exp.industry + '__' + exp.role;
+      if(!matchMap[key]){
+        matchMap[key] = { industry: exp.industry, role: exp.role, surprising: !!exp.surprising, note: exp.note || '', signals: [] };
+      }
+      matchMap[key].signals.push(sig.label);
+      if(exp.surprising) matchMap[key].surprising = true;
+      if(exp.note) matchMap[key].note = exp.note;
+    });
+  });
+
+  const matches = Object.keys(matchMap).map(function(k){ return matchMap[k]; });
+
+  return {
+    strengths: effectiveSignals.map(function(s){ return s.label; }),
+    matches: matches,
+    comment: COMMENTS[Math.floor(Math.random() * COMMENTS.length)]
+  };
+}
+
+function platformLinks(keyword, region){
+  const plain = encodeURIComponent(keyword);
+  const combined = region ? (keyword + ' ' + region) : keyword;
+  const q = encodeURIComponent(combined);
+  const linkedinLocation = region ? ('&location=' + encodeURIComponent(region) + '%2C%20South%20Korea') : '';
+  return {
+    linkedin: 'https://www.linkedin.com/jobs/search/?keywords=' + plain + linkedinLocation,
+    jobkorea: 'https://www.jobkorea.co.kr/Search/?stext=' + q,
+    saramin: 'https://www.saramin.co.kr/zf_user/search/recruit?searchword=' + q,
+    peoplenjob: 'https://www.google.com/search?q=' + encodeURIComponent('site:peoplenjob.com ' + combined)
+  };
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+/* ---------- 파일 → 텍스트 추출 (클릭 업로드 + 드래그앤드롭 공용) ---------- */
+async function extractTextFromFile(file){
+  const ext = file.name.split('.').pop().toLowerCase();
+
+  if(ext === 'txt' || ext === 'md'){
+    return await file.text();
+  }
+
+  if(ext === 'docx'){
+    if(!window.mammoth){ throw new Error('문서 추출 라이브러리(mammoth)를 불러오지 못했어요.'); }
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+    return result.value;
+  }
+
+  if(ext === 'pdf'){
+    if(!window.pdfjsLib){ throw new Error('PDF 추출 라이브러리(pdf.js)를 불러오지 못했어요.'); }
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    let fullText = '';
+    for(let i = 1; i <= pdf.numPages; i++){
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const pageText = content.items.map(function(it){ return it.str; }).join(' ');
+      fullText += pageText + '\n';
+    }
+    return fullText;
+  }
+
+  throw new Error('지원하지 않는 파일 형식이에요. (.txt, .md, .docx, .pdf 만 가능)');
+}
+
+async function processFile(file){
+  const fileStatus = document.getElementById('fileStatus');
+  const textarea = document.getElementById('careerInput');
+  if(!file) return;
+
+  fileStatus.textContent = '📄 ' + file.name + ' 읽는 중...';
+
+  try{
+    let text = await extractTextFromFile(file);
+    text = (text || '').trim();
+    if(!text){
+      throw new Error('파일에서 텍스트를 못 찾았어요. 스캔된 이미지 PDF는 인식이 안 될 수 있어요.');
+    }
+    textarea.value = text;
+    fileStatus.textContent = '✅ ' + file.name + ' 내용을 불러왔어요 (' + text.length + '자). 필요하면 직접 수정해주세요.';
+  }catch(err){
+    console.error(err);
+    fileStatus.textContent = '⚠️ ' + (err.message || String(err)) + ' — 대신 텍스트를 직접 붙여넣어 주세요.';
+  }
+}
+
+function handleFileInputChange(event){
+  const file = event.target.files[0];
+  if(file) processFile(file);
+}
+
+function handleDragOver(e){
+  e.preventDefault();
+  document.getElementById('dropzone').classList.add('dragover');
+}
+function handleDragLeave(e){
+  e.preventDefault();
+  document.getElementById('dropzone').classList.remove('dragover');
+}
+function handleDrop(e){
+  e.preventDefault();
+  document.getElementById('dropzone').classList.remove('dragover');
+  const file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if(file) processFile(file);
+}
+
+/* ---------- 결과 렌더링 ---------- */
+
+/* 사람인 API로 미리 수집해둔 실제 공고 데이터 (GitHub Actions가 주기적으로 갱신)
+   배포 전이거나 아직 워크플로우가 한 번도 안 돈 상태에서는 이 파일이 없을 수 있고,
+   그 경우 자동으로 기존 검색 딥링크 방식으로 동작합니다. */
+let realJobsByRole = {};
+let realJobsLoaded = false;
+
+async function loadRealJobs(){
+  try{
+    const res = await fetch('./data/jobs.json', { cache: 'no-store' });
+    if(!res.ok){ throw new Error('jobs.json 응답 실패 (status ' + res.status + ')'); }
+    const data = await res.json();
+    const map = {};
+    (data.jobs || []).forEach(function(j){
+      if(!map[j.role]) map[j.role] = [];
+      map[j.role].push(j);
+    });
+    realJobsByRole = map;
+    realJobsLoaded = true;
+    console.log('실제 공고 데이터 로드 완료 (갱신: ' + data.updatedAt + ', 총 ' + (data.jobs||[]).length + '건)');
+  }catch(err){
+    // 정상적인 상황일 수 있어요: 아직 GitHub Actions를 안 돌렸거나, 로컬 파일로 열어본 경우.
+    console.warn('실제 공고 데이터를 못 불러왔어요 (검색 링크 방식으로 동작해요):', err.message);
+    realJobsByRole = {};
+    realJobsLoaded = false;
+  }
+}
+loadRealJobs();
+
+function realJobsHtml(role){
+  const jobs = realJobsByRole[role];
+  if(!jobs || !jobs.length) return '';
+  let html = '<div class="real-jobs">';
+  jobs.slice(0, 3).forEach(function(j){
+    html += '<a class="real-job-card" href="' + j.url + '" target="_blank" rel="noopener">'
+      + '<span class="real-job-company">' + escapeHtml(j.company || '비공개 기업') + '</span>'
+      + '<span class="real-job-title">' + escapeHtml(j.title || '') + '</span>'
+      + '<span class="real-job-meta">' + escapeHtml(j.location || '') + (j.salary ? ' · ' + escapeHtml(j.salary) : '') + '</span>'
+      + '</a>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function linksHtml(role, region){
+  const real = realJobsHtml(role);
+  const links = platformLinks(role, region);
+  const deepLinks = '<div class="platform-links">'
+    + '<a href="' + links.linkedin + '" target="_blank" rel="noopener">링크드인</a>'
+    + '<a href="' + links.jobkorea + '" target="_blank" rel="noopener">잡코리아</a>'
+    + '<a href="' + links.saramin + '" target="_blank" rel="noopener">사람인</a>'
+    + '<a href="' + links.peoplenjob + '" target="_blank" rel="noopener">피플앤잡</a>'
+    + '</div>';
+
+  if(real){
+    return real + '<div class="more-search-link"><a href="' + links.saramin + '" target="_blank" rel="noopener">더 많은 공고 검색결과 보기 →</a></div>';
+  }
+  return deepLinks;
+}
+
+function renderResult(parsed){
+  const resultArea = document.getElementById('demoResult');
+  const strengths = Array.isArray(parsed.strengths) ? parsed.strengths : [];
+  const matches = Array.isArray(parsed.matches) ? parsed.matches : [];
+  const comment = typeof parsed.comment === 'string' ? parsed.comment : '';
+  lastMatches = matches;
+  currentTab = 'industry';
+
+  let html = '<div class="result-bubble">';
+
+  if(comment){
+    html += '<p class="result-comment">🙋 ' + escapeHtml(comment) + '</p>';
+  }
+
+  if(strengths.length){
+    html += '<div class="result-section-label">비서가 본 당신의 핵심 강점</div>';
+    html += '<div class="chip-row">';
+    strengths.forEach(function(s){ html += '<span class="chip">' + escapeHtml(s) + '</span>'; });
+    html += '</div>';
+  }
+
+  if(matches.length){
+    const industryCount = new Set(matches.map(function(m){ return m.industry; })).size;
+    const roleCount = new Set(matches.map(function(m){ return m.role; })).size;
+
+    html += '<div class="result-section-label">' + industryCount + '개 산업 · ' + roleCount + '개 직무로 던져볼 수 있어요</div>';
+    html += '<div class="tab-row">'
+      + '<button class="tab-btn" id="tabIndustry" onclick="switchTab(\'industry\')">🏭 산업별로 보기</button>'
+      + '<button class="tab-btn" id="tabRole" onclick="switchTab(\'role\')">💼 직무별로 보기</button>'
+      + '<button class="tab-btn" id="tabSurprising" onclick="switchTab(\'surprising\')">💡 의외의 커리어</button>'
+      + '</div>';
+
+    html += '<div class="result-filter-row">'
+      + '<div class="result-filter-field"><label for="resultFilterRegion">지역</label>'
+      + '<select id="resultFilterRegion" onchange="renderMatchResults()">'
+      + '<option value="">전국 · 지역무관</option><option value="서울">서울</option><option value="경기">경기</option>'
+      + '<option value="인천">인천</option><option value="부산">부산</option><option value="대구">대구</option>'
+      + '<option value="대전">대전</option><option value="광주">광주</option><option value="강원">강원</option><option value="제주">제주</option>'
+      + '</select></div>'
+      + '<div class="result-filter-field"><label for="resultFilterSalary">연봉대</label>'
+      + '<select id="resultFilterSalary">'
+      + '<option value="">상관없음</option><option value="3,000만원 이하">3,000만원 이하</option>'
+      + '<option value="3,000~5,000만원">3,000~5,000만원</option><option value="5,000~7,000만원">5,000~7,000만원</option>'
+      + '<option value="7,000만원 이상">7,000만원 이상</option></select></div>'
+      + '<div class="result-filter-field"><label for="resultFilterSize">회사 규모</label>'
+      + '<select id="resultFilterSize">'
+      + '<option value="">상관없음</option><option value="스타트업">스타트업</option><option value="중소기업">중소기업</option>'
+      + '<option value="중견기업">중견기업</option><option value="대기업">대기업</option><option value="외국계">외국계</option></select></div>'
+      + '</div>';
+
+    html += '<div id="matchResultsContainer"></div>';
+    html += '<p class="demo-disclaimer">' + (realJobsLoaded
+      ? '* 사람인 API로 가져온 실제 공고예요(주기적으로 갱신돼요). 더 보려면 검색결과 링크를 눌러주세요.'
+      : '* 아직 실제 공고 연동 전이라 검색 링크로 연결돼요. 연봉대·회사 규모는 사이트 자체 상세 필터에서 한 번 더 좁혀주세요.') + '</p>';
+  }
+
+  html += '</div>';
+  resultArea.innerHTML = html;
+
+  if(matches.length){
+    renderMatchResults();
+  }
+}
+
+function switchTab(tab){
+  currentTab = tab;
+  renderMatchResults();
+}
+
+function updateTabButtons(){
+  const map = { industry: 'tabIndustry', role: 'tabRole', surprising: 'tabSurprising' };
+  Object.keys(map).forEach(function(key){
+    const btn = document.getElementById(map[key]);
+    if(btn){ btn.classList.toggle('active', key === currentTab); }
+  });
+}
+
+function renderMatchResults(){
+  const container = document.getElementById('matchResultsContainer');
+  if(!container) return;
+  updateTabButtons();
+
+  const regionEl = document.getElementById('resultFilterRegion');
+  const region = regionEl ? regionEl.value : '';
+
+  let html = '';
+
+  if(currentTab === 'surprising'){
+    const list = lastMatches.filter(function(m){ return m.surprising; });
+    if(!list.length){
+      html = '<p class="demo-disclaimer">이번 입력에서는 의외의 커리어 추천이 따로 안 잡혔어요. 경력을 좀 더 구체적으로 적어주시면 더 잘 찾아드릴 수 있어요.</p>';
+    }else{
+      list.forEach(function(m){
+        html += '<div class="surprising-card">'
+          + '<div class="keyword-row-top"><span>💡 ' + escapeHtml(m.industry) + ' · ' + escapeHtml(m.role) + (region ? ' · ' + escapeHtml(region) : '') + '</span></div>'
+          + (m.note ? '<p class="surprising-note">' + escapeHtml(m.note) + '</p>' : '')
+          + linksHtml(m.role, region)
+          + '</div>';
+      });
+    }
+
+  }else if(currentTab === 'role'){
+    const groups = {};
+    const order = [];
+    lastMatches.forEach(function(m){
+      if(!groups[m.role]){ groups[m.role] = { role: m.role, industries: [] }; order.push(m.role); }
+      groups[m.role].industries.push(m.industry);
+    });
+    order.forEach(function(roleKey){
+      const g = groups[roleKey];
+      html += '<div class="industry-group">'
+        + '<div class="industry-group-header">💼 ' + escapeHtml(g.role) + ' <span class="industry-group-count">' + g.industries.length + '개 산업에서 통해요</span></div>'
+        + '<div class="signal-tags">' + g.industries.map(escapeHtml).join(' · ') + '</div>'
+        + linksHtml(g.role, region)
+        + '</div>';
+    });
+
+  }else{
+    const groups = {};
+    const order = [];
+    lastMatches.forEach(function(m){
+      if(!groups[m.industry]){ groups[m.industry] = { industry: m.industry, roles: [] }; order.push(m.industry); }
+      groups[m.industry].roles.push(m.role);
+    });
+    order.forEach(function(industryKey){
+      const g = groups[industryKey];
+      html += '<div class="industry-group">'
+        + '<div class="industry-group-header">🏭 ' + escapeHtml(g.industry) + ' <span class="industry-group-count">' + g.roles.length + '개 직무</span></div>';
+      g.roles.forEach(function(role){
+        html += '<div class="keyword-row">'
+          + '<div class="keyword-row-top"><span>' + escapeHtml(role) + (region ? ' · ' + escapeHtml(region) : '') + '</span></div>'
+          + linksHtml(role, region)
+          + '</div>';
+      });
+      html += '</div>';
+    });
+  }
+
+  container.innerHTML = html;
+}
+
+/* ---------- 강점 분석 (로컬 키워드 매칭, 네트워크 불필요) ---------- */
+function analyzeCareer(){
+  const input = document.getElementById('careerInput').value.trim();
+  const resultArea = document.getElementById('demoResult');
+  const button = document.getElementById('analyzeBtn');
+
+  if(!input){
+    resultArea.innerHTML = '<div class="result-bubble"><p class="demo-error">음… 내용이 좀 있어야 분석할 수 있어요! 한두 줄이라도 적어주세요 🙏</p></div>';
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = '음… 한번 볼게요 🧐';
+  resultArea.innerHTML = '<div class="result-bubble"><span class="typing-dots"><span></span><span></span><span></span></span></div>';
+
+  setTimeout(function(){
+    try{
+      const parsed = deriveMatches(input);
+      renderResult(parsed);
+    }catch(err){
+      console.error(err);
+      resultArea.innerHTML = '<div class="result-bubble">'
+        + '<p class="demo-error">어… 분석하다가 문제가 생겼어요.</p>'
+        + '<p style="font-size:12px;color:#5b6b66;margin-top:8px;">오류 내용(디버그용): ' + escapeHtml(err.message || String(err)) + '</p>'
+        + '</div>';
+    }finally{
+      button.disabled = false;
+      button.textContent = '내 강점 분석하기';
+    }
+  }, 500);
+}
+</script>
+
+</body>
+</html>
